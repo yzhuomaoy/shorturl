@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx.xsd
+	http://www.springframework.org/schema/cache
+    http://www.springframework.org/schema/cache/spring-cache.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/mvc
+	http://www.springframework.org/schema/mvc/spring-mvc.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/task
+	http://www.springframework.org/schema/task/spring-task.xsd">
+
+	<!-- <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"> 
+		<property name="ignoreUnresolvablePlaceholders" value="true"/> <property 
+		name="locations"> <list> <value>classpath*:jdbc.properties</value> <value>classpath*:redis.properties</value> 
+		</list> </property> </bean> -->
+	<!-- <import resource="spring-redis.xml"/> -->
+
+	<!-- <bean id="mySpringBean" class="org.apache.ignite.IgniteSpringBean"> 
+		<property name="configuration"> <bean id="grid.cfg" class="org.apache.ignite.configuration.IgniteConfiguration"> 
+		<property name="gridName" value="mySpringGrid" /> </bean> </property> </bean> -->
+
+	<!-- <bean id="mySpringBean" class="org.apache.ignite.IgniteSpringBean" 
+		/> -->
+
+
+	<context:property-placeholder location="classpath*:jdbc.properties" />
+	<context:annotation-config />
+
+	<mvc:annotation-driven />
+
+	<task:annotation-driven />
+
+	<context:component-scan base-package="com.tbforward" />
+
+	<!-- 打开aop注解 -->
+	<!-- <aop:aspectj-autoproxy proxy-target-class="true"/> -->
+
+	<!-- Initialization for data source -->
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+
+	<!-- Enable annotation-driven caching. -->
+	<cache:annotation-driven />
+
+	<!-- <bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager"> 
+		<property name="caches"> <set> <bean class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"> 
+		<property name="name" value="shortUrl"></property> </bean> </set> </property> 
+		</bean> -->
+
+	<!-- Provide grid name. -->
+	<bean id="cacheManager" class="org.apache.ignite.cache.spring.SpringCacheManager">
+		<property name="configuration">
+			<bean id="grid.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
+				<property name="gridName" value="mySpringGrid" />
+				<!-- <property name="clientMode" value="true"/> -->
+			</bean>
+		</property>
+		<!-- <property name="dynamicCacheConfiguration">
+			<bean class="org.apache.ignite.configuration.CacheConfiguration">
+				<property name="cacheMode" value="LOCAL" />
+			</bean>
+		</property> -->
+	</bean>
+
+
+
+</beans>
