@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
@@ -16,6 +18,8 @@ import com.tbforward.beans.ShortUrl;
 @Repository
 @CacheConfig(cacheNames="shortUrl")
 public class ShortUrlDaoImpl implements ShortUrlDao {
+	
+	private Logger logger = LoggerFactory.getLogger(ShortUrlDaoImpl.class);
 
 	private JdbcTemplate jdbcTemplate;
 
@@ -30,7 +34,7 @@ public class ShortUrlDaoImpl implements ShortUrlDao {
 
 		jdbcTemplate.update(SQL, shortUrl.getCode(), shortUrl.getUrl());
 		
-		System.out.println("Insert Record with Code = " + shortUrl.getCode());
+		logger.debug("Insert Record with Code = " + shortUrl.getCode());
 	}
 
 	@Override
@@ -39,8 +43,8 @@ public class ShortUrlDaoImpl implements ShortUrlDao {
 		String SQL = "select * from shorturl where code = ?";
 		List<?> list = jdbcTemplate.query(SQL,
 				new Object[] { code }, new BeanPropertyRowMapper<ShortUrl>(ShortUrl.class));
-		
-		System.out.println("Query Record with Code = " + code);
+
+		logger.debug("Query Record with Code = " + code);
 		return list.isEmpty() ? null : (ShortUrl) list.iterator().next();
 	}
 
@@ -49,7 +53,7 @@ public class ShortUrlDaoImpl implements ShortUrlDao {
 		String SQL = "update shorturl set code = ?, url = ? where id = ?";
 		jdbcTemplate.update(SQL, shortUrl.getCode(), shortUrl.getUrl(),
 				shortUrl.getId());
-		System.out.println("Updated Record with ID = " + shortUrl.getId());
+		logger.debug("Updated Record with ID = " + shortUrl.getId());
 		return;
 	}
 
@@ -57,7 +61,7 @@ public class ShortUrlDaoImpl implements ShortUrlDao {
 	public void deleteById(Integer id) {
 		String SQL = "delete from shorturl where id = ?";
 		jdbcTemplate.update(SQL, id);
-		System.out.println("Deleted Record with ID = " + id);
+		logger.debug("Deleted Record with ID = " + id);
 		return;
 	}
 

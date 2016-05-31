@@ -68,6 +68,7 @@
 		<property name="configuration">
 			<bean id="grid.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
 				<property name="gridName" value="mySpringGrid" />
+				<property name="metricsLogFrequency" value="0" />
 				<!-- <property name="clientMode" value="true"/> -->
 			</bean>
 		</property>

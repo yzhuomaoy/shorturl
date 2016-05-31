@@ -28,7 +28,14 @@
     <mvc:resources location="/assets/" mapping="/assets/**"/>
     <mvc:resources location="/ztree/" mapping="/ztree/**"/>
 
-    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+    	<property name="interceptors">
+			<list>
+				<bean class="com.tbforward.interceptor.SessionInterceptor" />
+			</list>
+		</property>
+    
+    </bean>
 
     <bean class="org.springframework.web.servlet.view.BeanNameViewResolver"/>
 
