@@ -42,7 +42,7 @@
     <logger name="com.tbforward" level="INFO"/>
 
     <root level="INFO">
-    	<!-- <appender-ref ref="console" /> -->
+    	<appender-ref ref="console" />
         <appender-ref ref="logAppender" />
     </root>
 

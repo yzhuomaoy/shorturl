@@ -232,7 +232,7 @@
 	</profiles>
 
 	<build>
-		<finalName>tbforward</finalName>
+		<finalName>ROOT</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>

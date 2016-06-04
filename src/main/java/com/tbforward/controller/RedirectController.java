@@ -11,15 +11,20 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.apache.http.nio.IOControl;
 import org.apache.http.nio.client.methods.AsyncByteConsumer;
 import org.apache.http.nio.client.methods.HttpAsyncMethods;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -33,9 +38,25 @@ public class RedirectController {
 	@Autowired
 	@Qualifier("localShortUrl")
 	private ShortUrlGenerateService localShortUrlService;
-
+	
 	@RequestMapping("{code}")
-	public void getWorkflow(@PathVariable String code,
+	public void syncRetrieve(@PathVariable String code,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		ShortUrl shortUrl = localShortUrlService.getByCode(code);
+		
+		String ua = request.getHeader("User-Agent").toLowerCase();
+//		if (ua.matches("micromessenger")) {
+			// webchat
+			HttpGet get = new HttpGet(shortUrl.getUrl());
+	        CloseableHttpResponse tbRes = HttpClientBuilder.create().build().execute(get);
+	        FileCopyUtils.copy(tbRes.getEntity().getContent(), response.getOutputStream());
+//		} else {
+//			response.sendRedirect(shortUrl.getUrl());
+//		}
+	}
+
+//	@RequestMapping("{code}")
+	public void asyncRetrieve(@PathVariable String code,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		ShortUrl shortUrl = localShortUrlService.getByCode(code);
 		

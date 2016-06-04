@@ -4,11 +4,11 @@ import java.util.regex.Pattern;
 
 public class TaobaoUtil {
 	
-	public static final String TMALL_ITEM_PATTERN = "^(http:|https:)//(detail.tmall.com|detail.m.tmall.com)/\\S*(id=\\d{11})\\S*";
+	public static final String TMALL_ITEM_PATTERN = "^(http:|https:)//(detail.tmall.com|detail.m.tmall.com)/\\S*(id=\\d+)\\S*";
     
     public static final String TMALL_SHOP_PATTERN = "^(http:|https:)//(\\w+.tmall.com|\\w+.m.tmall.com)/?\\S*";
     
-    public static final String TAOBAO_ITEM_PATTERN = "^(http:|https:)//(item.taobao.com|h5.m.taobao.com)/\\S*(id=\\d{11})\\S*";
+    public static final String TAOBAO_ITEM_PATTERN = "^(http:|https:)//(item.taobao.com|h5.m.taobao.com)/\\S*(id=\\d+)\\S*";
     
     public static final String TAOBAO_SHOP_PATTERN = "^(http:|https:)//(\\w+.taobao.com|\\w+.m.taobao.com)/?\\S*";
     
@@ -28,7 +28,9 @@ public class TaobaoUtil {
 		String toGen = null;
     	if (Pattern.matches(TMALL_ITEM_PATTERN, url)) {
     		int idIndex = url.lastIndexOf("id=")+3;
-    		toGen = "https://detail.m.tmall.com/item.htm?id=" + url.substring(idIndex, idIndex+11);
+    		int endIdx = url.indexOf("&", idIndex);
+    		endIdx = endIdx == -1 ? url.length() : endIdx;
+    		toGen = "https://detail.m.tmall.com/item.htm?id=" + url.substring(idIndex, endIdx);
     	} else if (Pattern.matches(TMALL_SHOP_PATTERN, url)) {
     		int firstIdx = url.indexOf("//");
     		int endIdx = url.indexOf("/", firstIdx+2);
@@ -41,7 +43,9 @@ public class TaobaoUtil {
     		}
     	} else if (Pattern.matches(TAOBAO_ITEM_PATTERN, url)) {
     		int idIndex = url.lastIndexOf("id=")+3;
-    		toGen = "https://h5.m.taobao.com/awp/core/detail.htm?id=" + url.substring(idIndex, idIndex+11);
+    		int endIdx = url.indexOf("&", idIndex);
+    		endIdx = endIdx == -1 ? url.length() : endIdx;
+    		toGen = "https://h5.m.taobao.com/awp/core/detail.htm?id=" + url.substring(idIndex, endIdx);
     	} else if (Pattern.matches(TAOBAO_SHOP_PATTERN, url)) {
     		int firstIdx = url.indexOf("//");
     		int endIdx = url.indexOf("/", firstIdx+2);
