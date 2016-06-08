@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import com.tbforward.beans.ShortUrl;
 import com.tbforward.dao.ShortUrlDao;
 import com.tbforward.exception.ServiceException;
-import com.tbforward.utils.ShortUrlUtil;
 
 @Service("localShortUrl")
 public class LocalshortUrlGenerateServiceImpl implements
@@ -26,14 +25,16 @@ public class LocalshortUrlGenerateServiceImpl implements
 
 	@Override
 	public ShortUrl generate(String url) throws ServiceException {
-		if (!url.startsWith("http://") && !url.startsWith("https://")) {
-			url = "http://" + url;
-		}
-		String code = ShortUrlUtil.generate(url);
-		ShortUrl loaded = shortUrlDao.getByCode(code);
+		ShortUrl res = ShortUrl.convert(url);
+		
+		if (res.getType() == ShortUrl.URI.DIRECT) {
+    		throw new ServiceException("Taobao/Tmall url is not valid.");
+    	}
+		
+		ShortUrl loaded = shortUrlDao.getByCode(res.getCode());
 		if (loaded == null) {
-			shortUrlDao.save(new ShortUrl(code, url));
-			loaded = this.getByCode(code);
+			shortUrlDao.save(res);
+			loaded = this.getByCode(res.getCode());
 		}
 		
 		return loaded;

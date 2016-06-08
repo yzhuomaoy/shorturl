@@ -34,11 +34,13 @@ public class SinaShortUrlGenerateServiceImpl implements ShortUrlGenerateService 
 	        String result = EntityUtils.toString(response.getEntity());
 	        ObjectMapper mapper = new ObjectMapper();
 			array = mapper.readValue(result, SinaResponse[].class);
+			response.close();
+			get.completed();
 		} catch (Exception e) {
 		}
 		
 		return array != null && array.length == 1 ? 
-				new ShortUrl(array[0].getShortUrl(), array[0].getOrgUrl()) : null;
+				new ShortUrl(array[0].getShortUrl(), ShortUrl.URI.DIRECT, array[0].getOrgUrl()) : null;
 	}
 	
 	static class SinaResponse {

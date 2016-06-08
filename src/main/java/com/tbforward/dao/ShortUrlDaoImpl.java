@@ -30,9 +30,9 @@ public class ShortUrlDaoImpl implements ShortUrlDao {
 
 	@Override
 	public void save(ShortUrl shortUrl) {
-		String SQL = "insert into shorturl (code, url) values (?, ?)";
+		String SQL = "insert into shorturl (code, type, uri) values (?, ?, ?)";
 
-		jdbcTemplate.update(SQL, shortUrl.getCode(), shortUrl.getUrl());
+		jdbcTemplate.update(SQL, shortUrl.getCode(), shortUrl.getType().getType(), shortUrl.getUri());
 		
 		logger.debug("Insert Record with Code = " + shortUrl.getCode());
 	}
@@ -42,7 +42,7 @@ public class ShortUrlDaoImpl implements ShortUrlDao {
 	public ShortUrl getByCode(String code) {
 		String SQL = "select * from shorturl where code = ?";
 		List<?> list = jdbcTemplate.query(SQL,
-				new Object[] { code }, new BeanPropertyRowMapper<ShortUrl>(ShortUrl.class));
+				new Object[] { code }, new ShortUrlMapper());
 
 		logger.debug("Query Record with Code = " + code);
 		return list.isEmpty() ? null : (ShortUrl) list.iterator().next();
@@ -50,8 +50,8 @@ public class ShortUrlDaoImpl implements ShortUrlDao {
 
 	@Override
 	public void update(ShortUrl shortUrl) {
-		String SQL = "update shorturl set code = ?, url = ? where id = ?";
-		jdbcTemplate.update(SQL, shortUrl.getCode(), shortUrl.getUrl(),
+		String SQL = "update shorturl set code = ?, type = ?, uri = ? where id = ?";
+		jdbcTemplate.update(SQL, shortUrl.getCode(), shortUrl.getType().getType(), shortUrl.getUri(),
 				shortUrl.getId());
 		logger.debug("Updated Record with ID = " + shortUrl.getId());
 		return;

@@ -41,21 +41,31 @@ public class RedirectController {
 	
 	@RequestMapping("{code}")
 	public void syncRetrieve(@PathVariable String code,
-			HttpServletRequest request, HttpServletResponse response) throws Exception {
+			HttpServletRequest request, HttpServletResponse response) {
 		ShortUrl shortUrl = localShortUrlService.getByCode(code);
 		
 		String ua = request.getHeader("User-Agent").toLowerCase();
+		CloseableHttpResponse tbRes = null;
+		try {
 //		if (ua.matches("micromessenger")) {
 			// webchat
-			HttpGet get = new HttpGet(shortUrl.getUrl());
-	        CloseableHttpResponse tbRes = HttpClientBuilder.create().build().execute(get);
+			HttpGet get = new HttpGet(shortUrl.toUrl());
+	        tbRes = HttpClientBuilder.create().build().execute(get);
 	        FileCopyUtils.copy(tbRes.getEntity().getContent(), response.getOutputStream());
 //		} else {
 //			response.sendRedirect(shortUrl.getUrl());
 //		}
+		} catch (Exception e) {
+			if (tbRes != null) {
+				try {
+					tbRes.close();
+				} catch (IOException e1) {
+				}
+			}
+		}
 	}
 
-//	@RequestMapping("{code}")
+	@RequestMapping("/async/{code}")
 	public void asyncRetrieve(@PathVariable String code,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		ShortUrl shortUrl = localShortUrlService.getByCode(code);
@@ -67,7 +77,7 @@ public class RedirectController {
 			try {
 				httpclient.start();
 				Future<Boolean> future = httpclient.execute(
-						HttpAsyncMethods.createGet(shortUrl.getUrl()),
+						HttpAsyncMethods.createGet(shortUrl.toUrl()),
 						new MyResponseConsumer(response), null);
 				Boolean result = future.get();
 				if (result != null && result.booleanValue()) {

@@ -47,21 +47,37 @@
 	<!-- <aop:aspectj-autoproxy proxy-target-class="true"/> -->
 
 	<!-- Initialization for data source -->
-	<bean id="dataSource"
+	<!-- <bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="${jdbc.driverClassName}" />
 		<property name="url" value="${jdbc.url}" />
 		<property name="username" value="${jdbc.username}" />
 		<property name="password" value="${jdbc.password}" />
-	</bean>
+	</bean> -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driverClassName}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="initialSize" value="3"/>
+        <property name="minIdle" value="3"/>
+        <property name="maxActive" value="20"/>
+        <property name="maxWait" value="60000"/>
+    </bean>
 
 	<!-- Enable annotation-driven caching. -->
 	<cache:annotation-driven />
 
-	<!-- <bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager"> 
-		<property name="caches"> <set> <bean class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"> 
-		<property name="name" value="shortUrl"></property> </bean> </set> </property> 
-		</bean> -->
+	<!-- <bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">
+		<property name="caches">
+			<set>
+				<bean
+					class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean">
+					<property name="name" value="shortUrl"></property>
+				</bean>
+			</set>
+		</property>
+	</bean> -->
 
 	<!-- Provide grid name. -->
 	<bean id="cacheManager" class="org.apache.ignite.cache.spring.SpringCacheManager">
@@ -69,12 +85,44 @@
 			<bean id="grid.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
 				<property name="gridName" value="mySpringGrid" />
 				<property name="metricsLogFrequency" value="0" />
-				<!-- <property name="clientMode" value="true"/> -->
 			</bean>
 		</property>
 		<!-- <property name="dynamicCacheConfiguration">
 			<bean class="org.apache.ignite.configuration.CacheConfiguration">
+				<property name="expiryPolicyFactory">
+					<bean class="javax.cache.expiry.CreatedExpiryPolicy" factory-method="factoryOf">
+						<constructor-arg>
+							<bean class="javax.cache.expiry.Duration">
+								<constructor-arg index="0" type="java.util.concurrent.TimeUnit" value="SECONDS">
+								</constructor-arg>
+								<constructor-arg index="1" value="5" />
+							</bean>
+						</constructor-arg>
+					</bean>
+				</property>
 				<property name="cacheMode" value="LOCAL" />
+			</bean>
+		</property> -->
+		<!-- 
+		<property name="discoverySpi">
+			<bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+				<property name="ipFinder">
+					<bean
+						class="org.apache.ignite.spi.discovery.tcp.ipfinder.multicast.TcpDiscoveryMulticastIpFinder">
+						<property name="multicastGroup" value="228.10.10.157" />
+
+						list of static IP addresses
+						<property name="addresses">
+							<list>
+								<value>1.2.3.4</value>
+
+								IP Address and optional port range. You can also optionally 
+									specify an individual port.
+								<value>1.2.3.5:47500..47509</value>
+							</list>
+						</property>
+					</bean>
+				</property>
 			</bean>
 		</property> -->
 	</bean>

@@ -39,7 +39,7 @@
 
     <logger name="org.springframework.jdbc" level="ERROR"/>
     <logger name="org.springframework.transaction" level="ERROR"/>
-    <logger name="com.tbforward" level="INFO"/>
+    <logger name="com.tbforward" level="DEBUG"/>
 
     <root level="INFO">
     	<appender-ref ref="console" />

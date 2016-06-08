@@ -41,8 +41,19 @@
             <list>
                 <!-- Partitioned cache example configuration (Atomic mode). -->
                 <bean class="org.apache.ignite.configuration.CacheConfiguration">
-                    <property name="atomicityMode" value="ATOMIC"/>
-                    <property name="backups" value="1"/>
+                    <!-- <property name="atomicityMode" value="ATOMIC"/>
+                    <property name="backups" value="1"/> -->
+                    <property name="expiryPolicyFactory">
+						<bean class="javax.cache.expiry.CreatedExpiryPolicy" factory-method="factoryOf">
+							<constructor-arg>
+								<bean class="javax.cache.expiry.Duration">
+									<constructor-arg index="0" type="java.util.concurrent.TimeUnit" value="SECONDS">
+									</constructor-arg>
+									<constructor-arg index="1" value="5" />
+								</bean>
+							</constructor-arg>
+						</bean>
+					</property>
                 </bean>
             </list>
         </property>
