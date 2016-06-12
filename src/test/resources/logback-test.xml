@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property name="LOG_HOME" value="${catalina.home}/logs"/>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%p %c %d{yyyy-MM-dd HH:mm:ss.SSS} - %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- acl start -->
+    <!--
+    <appender name="acl" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${catalina.home}/logs/acl.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${catalina.home}/logs/acl.%d{yyyy-MM-dd}.log</FileNamePattern>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %5p %F:%L] %m%n</pattern>
+        </layout>
+    </appender>
+    <logger name="com.app.mvc.acl" level="INFO" additivity="false">
+        <appender-ref ref="acl"/>
+    </logger>
+    -->
+    <!-- acl end -->
+
+    <appender name="logAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${catalina.home}/logs/tbforward.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${catalina.home}/logs/app.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <append>true</append>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%p %c %d{yyyy-MM-dd HH:mm:ss.SSS} - %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.springframework.jdbc" level="ERROR"/>
+    <logger name="org.springframework.transaction" level="ERROR"/>
+    <logger name="com.tbforward" level="DEBUG"/>
+
+    <root level="INFO">
+    	<appender-ref ref="console" />
+        <appender-ref ref="logAppender" />
+    </root>
+
+</configuration>

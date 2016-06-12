@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx.xsd
+	http://www.springframework.org/schema/cache
+    http://www.springframework.org/schema/cache/spring-cache.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/mvc
+	http://www.springframework.org/schema/mvc/spring-mvc.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/task
+	http://www.springframework.org/schema/task/spring-task.xsd">
+
+	<!-- <bean id="mySpringBean" class="org.apache.ignite.IgniteSpringBean"> 
+		<property name="configuration"> <bean id="grid.cfg" class="org.apache.ignite.configuration.IgniteConfiguration"> 
+		<property name="gridName" value="mySpringGrid" /> </bean> </property> </bean> -->
+
+	<!-- <bean id="mySpringBean" class="org.apache.ignite.IgniteSpringBean" 
+		/> -->
+
+
+	<!-- <bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">
+		<property name="caches">
+			<set>
+				<bean
+					class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean">
+					<property name="name" value="shortUrl"></property>
+				</bean>
+			</set>
+		</property>
+	</bean> -->
+	
+	<bean id="webSessionCache" class="org.apache.ignite.configuration.CacheConfiguration">
+	    <!-- Cache name. -->
+	    <property name="name" value="session-cache"/>
+	 
+	    <!-- Set up LRU eviction policy with 10000 sessions limit. -->
+	    <property name="evictionPolicy">
+	        <bean class="org.apache.ignite.cache.eviction.lru.LruEvictionPolicy">
+	            <property name="maxSize" value="10000"/>
+	        </bean>
+	    </property>
+	</bean>
+
+<!-- 	<bean id="multicastAndStatic" class="org.apache.ignite.spi.discovery.tcp.ipfinder.multicast.TcpDiscoveryMulticastIpFinder">
+		<property name="multicastGroup" value="228.10.10.157" />
+		list of static IP addresses
+		<property name="addresses">
+			<list>
+				<value>1.2.3.4</value>
+				IP Address and optional port range. You can also optionally
+				specify an individual port.
+				<value>1.2.3.5:47500..47509</value>
+			</list>
+		</property>
+	</bean> -->
+
+	<bean id="staticIPBased" class="org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder">
+		<property name="addresses">
+			<list>
+				<!-- IP Address and optional port range of a remote node. You can also 
+					optionally specify an individual port and don't set the port range at all. -->
+				<value>${ignite.cache.server}</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="grid.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
+		<!-- <property name="gridName" value="mySpringGrid" /> -->
+		<!-- <property name="daemon" value="true" /> -->
+		<property name="metricsLogFrequency" value="0" />
+		<property name="clientMode" value="true"/>
+		<property name="cacheConfiguration" ref="webSessionCache" />
+		<property name="discoverySpi">
+			<bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+				<property name="ipFinder" ref="staticIPBased" />
+			</bean>
+		</property>
+	</bean>
+</beans>
